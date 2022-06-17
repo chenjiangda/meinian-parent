@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.OrderSettingDao">
+    
+    <!-- void add(OrderSetting orderSetting); -->
+    <insert id="add" parameterType="OrderSetting">
+        insert into t_ordersetting(orderDate,number,reservations) values(#{orderDate},#{number},#{reservations})
+    </insert>
+
+    <!-- int findOrderSettingByOrderDate(Date orderDate); -->
+    <select id="findOrderSettingByOrderDate" parameterType="date" resultType="int">
+        select count(*) from t_ordersetting where orderDate=#{orderDate}
+    </select>
+
+    <!-- void edit(OrderSetting orderSetting); -->
+    <update id="edit" parameterType="orderSetting">
+        update t_ordersetting set number=#{number},reservations=#{reservations} where orderDate=#{orderDate}
+    </update>
+
+    <!-- List<OrderSetting> getOrderSettingByMonth(Map param); -->
+    <select id="getOrderSettingByMonth" parameterType="map" resultType="OrderSetting">
+        SELECT * FROM t_ordersetting WHERE orderDate BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!-- OrderSetting getOrderSettingByOrderDate(Date date); -->
+    <select id="getOrderSettingByOrderDate" parameterType="date" resultType="orderSetting">
+        select * from t_ordersetting where orderDate = #{date}
+    </select>
+
+    <!-- void editReservationsByOrderDate(OrderSetting orderSetting); -->
+    <update id="editReservationsByOrderDate" parameterType="orderSetting">
+        update t_ordersetting set reservations=#{reservations} where orderDate=#{orderDate}
+    </update>
+
+
+
+</mapper>

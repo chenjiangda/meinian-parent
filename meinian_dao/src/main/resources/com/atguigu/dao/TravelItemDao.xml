@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.TravelItemDao">
+
+    <!-- 这个老师还定义了参数的类型，其实不定义也可以的啊
+    设置了别名包，可以省略包名com.atguigu.pojo，直接写类名首字母小写（大写也行）
+    -->
+
+    <!-- void add(TravelItem travelItem); -->
+    <insert id="add" parameterType="travelItem">
+        insert into t_travelitem(code,name,sex,age,price,type,remark,attention)
+        values(#{code},#{name},#{sex},#{age},#{price},#{type},#{remark},#{attention})
+    </insert>
+
+    <!-- Page findPage(@Param("queryString") String queryString); -->
+    <!-- 这边的resultType是要查询的实体对象，分页插件会把
+        这些查到的实体对象封装放到Page的result里面，还会有一些信息比如总页数啥的也封装到Page里面
+     -->
+    <select id="findPage" parameterType="string" resultType="travelItem">
+        select * from t_travelitem
+        <where>
+            <if test="queryString!=null and queryString.length>0"><!--不用@Param指定的话需要用value来获取这个参数-->
+                code=#{queryString} or name like CONCAT('%',#{queryString},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <!-- void delete(Integer id); -->
+    <delete id="delete" parameterType="integer">
+        delete from t_travelitem where id=#{id}
+    </delete>
+
+    <!-- TravelItem getById(Integer id); -->
+    <select id="getById" resultType="TravelItem">
+        select * from t_travelitem where id=#{id}
+    </select>
+
+    <!-- void edit(TravelItem travelItem); -->
+    <update id="edit" parameterType="travelItem" >
+        update t_travelitem
+        <set>
+            <if test="code!=null and code.length>0">
+                code=#{code},
+            </if>
+            <if test="name!=null and name.length>0">
+                name=#{name},
+            </if>
+            <if test="sex!=null and sex.length>0">
+                sex=#{sex},
+            </if>
+            <if test="age!=null and age.length>0">
+                age=#{age},
+            </if>
+            <if test="price!=null">
+                price=#{price},
+            </if>
+            <if test="type!=null and type.length>0">
+                type=#{type},
+            </if>
+            <if test="remark!=null and remark.length>0">
+                remark=#{remark},
+            </if>
+            <if test="attention!=null and attention.length>0">
+                attention=#{attention},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!-- List<TravelItem> findAll(); -->
+    <select id="findAll" resultType="travelItem">
+        select * from t_travelitem
+    </select>
+
+
+    <!-- long findCountByTravelitem(Integer id); -->
+    <select id="findCountByTravelitem" parameterType="integer" resultType="long">
+        select count(*) from t_travelgroup_travelitem where travelitem_id=#{id}
+    </select>
+
+
+    <!-- List<TravelItem> findTravelItemById(Integer id); -->
+    <select id="findTravelItemById" parameterType="integer" resultType="TravelItem">
+        SELECT t_travelitem.* FROM t_travelitem
+        WHERE id IN (SELECT travelitem_id FROM t_travelgroup_travelitem WHERE travelgroup_id=#{id})
+    </select>
+
+</mapper>
+

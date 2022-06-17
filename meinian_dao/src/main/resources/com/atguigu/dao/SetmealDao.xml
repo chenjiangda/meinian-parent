@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.SetmealDao">
+
+    <!-- void addSetmealAndTravelGroup(Map<String, Integer> map); -->
+    <insert id="addSetmealAndTravelGroup" parameterType="map" >
+        insert into t_setmeal_travelgroup(setmeal_id,travelgroup_id) values(#{setmealId},#{travelgroupId})
+    </insert>
+
+    <!-- void add(Setmeal setmeal); -->
+    <insert id="add" parameterType="setmeal" useGeneratedKeys="true" keyProperty="id">
+        insert into t_setmeal(name,  code,  helpCode,  sex,  age,  price,  remark,  attention,  img)
+        values(#{name},    #{code},    #{helpCode},    #{sex},    #{age},    #{price},    #{remark},    #{attention},    #{img})
+    </insert>
+
+    <!-- Page findPage(@Param("queryString") String queryString); -->
+    <select id="findPage" parameterType="string" resultType="Setmeal">
+        select * from t_setmeal
+        <where>
+            <if test="queryString!=null and queryString.length>0">
+                code=#{queryString} or name like concat("%",#{queryString},"%") or helpCode=#{queryString}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- List<Setmeal> getSetmeal(); -->
+    <select id="getSetmeal" resultType="setmeal">
+        select * from t_setmeal
+    </select>
+
+
+    <resultMap id="SetmealResultMap" type="setmeal">
+        <id  property="id" column="id"/>
+        <result  property="name" column="name"/>
+        <result  property="code" column="code"/>
+        <result  property="helpCode" column="helpCode"/>
+        <result  property="sex" column="sex"/>
+        <result  property="age" column="age"/>
+        <result  property="price" column="price"/>
+        <result  property="remark" column="remark"/>
+        <result  property="attention" column="attention"/>
+        <result  property="img" column="img"/>
+
+        <!-- 关联集合属性 -->
+        <!-- column属性：用来给select属性指定的SQL语句传参数 -->
+        <collection property="travelGroups" column="id"
+                    select="com.atguigu.dao.TravelGroupDao.findTravelGroupById"></collection>
+
+    </resultMap>
+    
+    <!-- Setmeal findById(Integer id); -->
+    <select id="findById" parameterType="integer" resultMap="SetmealResultMap">
+        select * from t_setmeal where id=#{id}
+    </select>
+
+    <!-- Setmeal getSetmealById(Integer id); -->
+    <select id="getSetmealById" parameterType="integer" resultType="setmeal">
+        select * from t_setmeal where id=#{id}
+    </select>
+
+    <!--  List<Map> getSetmealReport(); -->
+    <select id="getSetmealReport" resultType="map">
+        SELECT s.name name,COUNT(o.id) value
+        FROM t_setmeal s,t_order o WHERE s.id = o.setmeal_id
+        GROUP BY s.name
+    </select>
+
+</mapper>
